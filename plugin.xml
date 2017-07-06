@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="kr.co.anylogic.joystick" version="1.0.0">
    <name>gigaeyesjoystick</name>
-   <js-module name="GigaeyesJoystick" src="www/gigaeyesjoystick.js">
+   <js-module name="gigaeyesjoystick" src="www/gigaeyesjoystick.js">
       <clobbers target="kr.co.anylogic.joystick" />
    </js-module>
    <!--<platform name="ios">
@@ -52,7 +52,5 @@
       <source-file src="src/android/GigaeyesJoystick.java" target-dir="src/kr/co/anylogic/joystick" />
       <source-file src="src/android/JoystickEvents.java" target-dir="src/kr/co/anylogic/joystick" />
       <source-file src="src/android/JoystickHandlerActivity.java" target-dir="src/kr/co/anylogic/joystick" />
-      <source-file src="src/android/gigaeyesplayer.java" target-dir="src/kr/co/anylogic/joystick" />
-      <source-file src="src/android/gigaeyesActivity.java" target-dir="src/kr/co/anylogic/joystick" />
    </platform>
 </plugin>
