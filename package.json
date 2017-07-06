@@ -1,0 +1,38 @@
+{
+  "name": "kr.co.anylogic.joystick",
+  "version": "1.0.0",
+  "description": "A Codova plugin that simply allows you to operating PTZ in fullscreen mode.",
+  "cordova": {
+    "id": "kr.co.anylogic.joystick.GigaeyesJoyStick",
+    "platforms": [
+      "android"
+    ]
+  },
+  "engines": {
+    "cordovaDependencies": {
+      "2.0.0": {
+        "cordova": ">100"
+      }
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JAEGYUN/gigaeyesJoystick.git"
+  },
+  "keywords": [
+    "cordova",
+    "video",
+    "PTZ",
+    "player",
+    "fullscreen"
+  ],
+  "author": "civan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JAEGYUN/gigaeyesJoystick/issues"
+  },
+  "homepage": "https://github.com/JAEGYUN/gigaeyesJoystick#readme"
+}

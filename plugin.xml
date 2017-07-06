@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="kr.co.anylogic.joystick" version="1.0.0">
+   <name>gigaeyesjoystick</name>
+   <js-module name="GigaeyesJoystick" src="www/gigaeyesjoystick.js">
+      <clobbers target="kr.co.anylogic.joystick" />
+   </js-module>
+   <!--<platform name="ios">
+      <config-file parent="/*" target="config.xml">
+         <feature name="360player">
+            <param name="ios-package" value="rtsplayer" />
+         </feature>
+      </config-file>
+      <header-file src="src/ios/rtsplayer.h" />
+      <source-file src="src/ios/rtsplayer.m" />
+      <header-file src="src/ios/rtsplayerViewController.h" />
+      <source-file src="src/ios/rtsplayerViewController.m" />
+      <resource-file src="src/ios/rtsplayerViewController.xib" />
+      <header-file src="src/ios/FFFrameExtractor.h" />
+      <source-file compiler-flags="-I/usr/local/FFMpegiOS/include/ -I/usr/local/FFMpegiOS/include/libavcodec/ -I/usr/local/FFMpegiOS/include/libavformat/ -I/usr/local/FFMpegiOS/include/libswscale/" src="src/ios/FFFrameExtractor.m" />
+      <framework src="libiconv.dylib" />
+      <framework src="libz.dylib" />
+      <framework src="libbz2.dylib" />
+      <framework src="CoreVideo.framework" />
+      <source-file framework="true" src="src/ios/FFMpegiOS/lib/libavcodec.a" />
+      <source-file framework="true" src="src/ios/FFMpegiOS/lib/libavdevice.a" />
+      <source-file framework="true" src="src/ios/FFMpegiOS/lib/libavfilter.a" />
+      <source-file framework="true" src="src/ios/FFMpegiOS/lib/libavformat.a" />
+      <source-file framework="true" src="src/ios/FFMpegiOS/lib/libavutil.a" />
+      <source-file framework="true" src="src/ios/FFMpegiOS/lib/libswresample.a" />
+      <source-file framework="true" src="src/ios/FFMpegiOS/lib/libswscale.a" />
+   </platform>-->
+   <platform name="android">
+      <config-file parent="/*" target="res/xml/config.xml">
+         <feature name="gigaeyesjoystick">
+            <param name="android-package" value="kr.co.anylogic.joystick" />
+         </feature>
+      </config-file>
+      <config-file parent="/*" target="AndroidManifest.xml">
+         <uses-permission android:name="android.permission.INTERNET" />
+         <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+         <uses-permission android:name="android.permission.WAKE_LOCK" />
+         <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+         <uses-permission android:name="android.permission.RECORD_AUDIO" />
+         <uses-permission android:name="android.permission.CAMERA" />
+      </config-file>
+       <config-file target="AndroidManifest.xml" parent="/manifest/application">
+        <activity android:name="kr.co.anylogic.joystick.JoystickHandlerActivity"></activity>
+      </config-file>
+      <source-file src="src/android/res/drawable/joystick.png" target-dir="res/drawable" />
+      <source-file src="src/android/res/layout/activity_main.xml" target-dir="res/layout" />
+      <source-file src="src/android/res/layout/over.xml" target-dir="res/layout" />
+      <source-file src="src/android/GigaeyesJoystick.java" target-dir="src/kr/co/anylogic/joystick" />
+      <source-file src="src/android/JoystickEvents.java" target-dir="src/kr/co/anylogic/joystick" />
+      <source-file src="src/android/JoystickHandlerActivity.java" target-dir="src/kr/co/anylogic/joystick" />
+      <source-file src="src/android/gigaeyesplayer.java" target-dir="src/kr/co/anylogic/joystick" />
+      <source-file src="src/android/gigaeyesActivity.java" target-dir="src/kr/co/anylogic/joystick" />
+   </platform>
+</plugin>
