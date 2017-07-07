@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="kr.co.anylogic.joystick" version="1.0.0">
-   <name>gigaeyesjoystick</name>
-   <js-module name="gigaeyesjoystick" src="www/gigaeyesjoystick.js">
-      <clobbers target="kr.co.anylogic.joystick" />
+   <name>GigaeyesJoystick</name>
+   <js-module name="GigaeyesJoystick" src="www/gigaeyesjoystick.js">
+      <clobbers target="cordova.plugins.gigaeyesjoystick" />
    </js-module>
    <!--<platform name="ios">
       <config-file parent="/*" target="config.xml">
@@ -31,8 +31,8 @@
    </platform>-->
    <platform name="android">
       <config-file parent="/*" target="res/xml/config.xml">
-         <feature name="gigaeyesjoystick">
-            <param name="android-package" value="kr.co.anylogic.joystick" />
+         <feature name="GigaeyesJoystick">
+            <param name="android-package" value="kr.co.anylogic.joystick.GigaeyesJoystick" />
          </feature>
       </config-file>
       <config-file parent="/*" target="AndroidManifest.xml">

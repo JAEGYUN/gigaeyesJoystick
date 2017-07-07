@@ -1,7 +1,7 @@
 var exec = require('cordova/exec');
 
 exports.watch = function(moviePath, success, error) {
-    exec(success, error, "gigaeyesjoystick", "watch", [moviePath]);
+    exec(success, error, "GigaeyesJoystick", "watch", [moviePath]);
 };
 
 exports.move = function(){
@@ -13,5 +13,5 @@ exports.move = function(){
         alert(err);
     }
 
-    exec(callbackSuccess, callbackFail,"gigaeyesjoystick","move",[]);
+    exec(callbackSuccess, callbackFail,"GigaeyesJoystick","move",[]);
 }

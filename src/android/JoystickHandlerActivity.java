@@ -1,31 +1,26 @@
 package kr.co.anylogic.joystick;
 
+
+
 import android.app.Activity;
 
-
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.PowerManager;
+import android.net.Uri;
 import android.util.Log;
 import android.util.DisplayMetrics;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-import android.widget.Button;
 import android.widget.VideoView;
 
-import kr.co.anylogic.joystick.JoystickEvents;
-
-import java.io.IOException;
 
 public class JoystickHandlerActivity extends Activity implements JoystickEvents{
 
@@ -33,32 +28,47 @@ public class JoystickHandlerActivity extends Activity implements JoystickEvents{
     private LayoutInflater inflater;
     private RelativeLayout mRelativeLayout = null;
     private VideoView mVideoView;
-
     private String videoSrc;
+    private int activity_main;
+    private int over;
+    private int image_view;
+    private int video_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       
-        // 
+
         if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+            this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
             return;
         }
 
         Bundle extras  = getIntent().getExtras();
         if (extras != null) {
             videoSrc = extras.getString("VIDEO_URL");
+            activity_main = extras.getInt("activity_main");
+            over = extras.getInt("over");
+            image_view = extras.getInt("image_view");
+            video_view = extras.getInt("video_view");
         } else {
             finishWithError();
         }
 
-        Log.d("FLP","gigaeyesActivity videoSrc"+videoSrc);
-        Toast.makeText(getApplicationContext(),"gigaeyesActivity videoSrc:"+videoSrc,Toast.LENGTH_SHORT).show();
+        setContentView(activity_main);
 
-        setContentView(R.layout.activity_main);
+        Log.d("FLP","JoystickHandlerActivity videoSrc"+videoSrc);
+        Toast.makeText(getApplicationContext(),"JoystickHandlerActivity videoSrc:"+videoSrc,Toast.LENGTH_SHORT).show();
 
-        mRelativeLayout = (RelativeLayout) findViewById(R.id.main_relative_layout);
+
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+//      Layout 설정
+        inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        mRelativeLayout = (RelativeLayout) findViewById(kr.co.anylogic.joystick.id.main_relative_layout);
+
+
+        mRelativeLayout = (RelativeLayout)inflater.inflate(over, null);
 
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
 
@@ -71,22 +81,36 @@ public class JoystickHandlerActivity extends Activity implements JoystickEvents{
         params.leftMargin = 0;
         params.topMargin = 0;
 
-        Uri uri = Uri.parse(videoSrc);
-        mVideoView = new VRVideoView(this, uri);
+        getWindow().addContentView(mRelativeLayout, params);
 
-        mRelativeLayout.addView(mVideoView, params);
+
+//      동영상View 설정
+        Uri uri = Uri.parse(videoSrc);
+
+        mVideoView = (VideoView)findViewById(video_view);
+
+        mVideoView.setVideoURI(uri);
+        mVideoView.seekTo(0);
+        mVideoView.start();
+
+
+
+
+//      이미지View 설정
+//        mRelativeLayout.addView(mVideoView, params);
 
         overLay();
     }
 
     public void overLay(){
-        inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        rlTop = (RelativeLayout)inflater.inflate(R.layout.over, null);
-        getWindow().addContentView(rlTop, new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
 
-        ImageView iv = (ImageView)findViewById(R.id.img_joystick);
+//        inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        mRelativeLayout = (RelativeLayout)inflater.inflate(R.layout.over, null);
+//        getWindow().addContentView(mRelativeLayout, new RelativeLayout.LayoutParams(
+//                ViewGroup.LayoutParams.MATCH_PARENT,
+//                ViewGroup.LayoutParams.MATCH_PARENT));
+
+        ImageView iv = (ImageView)findViewById(image_view);
         iv.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -104,7 +128,7 @@ public class JoystickHandlerActivity extends Activity implements JoystickEvents{
     }
 
     void decision(int dpx, int dpy){
-        ImageView iv = (ImageView)findViewById(R.id.img_joystick);
+        ImageView iv = (ImageView)findViewById(image_view);
         int imgW = iv.getWidth();
         int ww = pxToDp(imgW);
 
@@ -144,7 +168,7 @@ public class JoystickHandlerActivity extends Activity implements JoystickEvents{
 
     void up(){
         Toast.makeText(getApplicationContext(), "up button clicked!", Toast.LENGTH_SHORT).show();
-        webView.sendJavascript("moveUp");
+//        webView.sendJavascript("moveUp");
     }
 
     void down(){
@@ -178,32 +202,7 @@ public class JoystickHandlerActivity extends Activity implements JoystickEvents{
         int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
         return px;
     }
-    
-    public boolean onTouchEvent(MotionEvent event) {
-        if(mVideoView != null){
-            mVideoView.setTouchEvent(event);
-        }
-        return true;
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     private void finishWithError() {
         setResult(100);
