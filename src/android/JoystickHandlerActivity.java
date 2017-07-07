@@ -47,6 +47,7 @@ public class JoystickHandlerActivity extends Activity implements JoystickEvents{
         if (extras != null) {
             videoSrc = extras.getString("VIDEO_URL");
             activity_main = extras.getInt("activity_main");
+            Log.d("FLP","activity_main id: "+activity_main);
             over = extras.getInt("over");
             image_view = extras.getInt("image_view");
             video_view = extras.getInt("video_view");
@@ -54,19 +55,20 @@ public class JoystickHandlerActivity extends Activity implements JoystickEvents{
             finishWithError();
         }
 
-        setContentView(activity_main);
+
 
         Log.d("FLP","JoystickHandlerActivity videoSrc"+videoSrc);
         Toast.makeText(getApplicationContext(),"JoystickHandlerActivity videoSrc:"+videoSrc,Toast.LENGTH_SHORT).show();
 
-
+        // 뷰 설정 전에 호출...
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-//      Layout 설정
-        inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        mRelativeLayout = (RelativeLayout) findViewById(kr.co.anylogic.joystick.id.main_relative_layout);
+        // 메인ContentView 설정
+        setContentView(activity_main);
 
+        // Layout 설정
+        inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         mRelativeLayout = (RelativeLayout)inflater.inflate(over, null);
 
@@ -94,21 +96,14 @@ public class JoystickHandlerActivity extends Activity implements JoystickEvents{
         mVideoView.start();
 
 
-
-
 //      이미지View 설정
-//        mRelativeLayout.addView(mVideoView, params);
-
         overLay();
     }
-
+    
+    /**
+     * 조이스틱 이미지 아이콘 레이어...
+     */
     public void overLay(){
-
-//        inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        mRelativeLayout = (RelativeLayout)inflater.inflate(R.layout.over, null);
-//        getWindow().addContentView(mRelativeLayout, new RelativeLayout.LayoutParams(
-//                ViewGroup.LayoutParams.MATCH_PARENT,
-//                ViewGroup.LayoutParams.MATCH_PARENT));
 
         ImageView iv = (ImageView)findViewById(image_view);
         iv.setOnTouchListener(new View.OnTouchListener() {
