@@ -6,5 +6,5 @@ public interface JoystickEvents{
     public static final String MOVE_LEFT = "moveLeft";
     public static final String MOVE_RIGHT = "moveRight";
     public static final String ZOOM_IN = "joomIn";
-    public static final String ZOOM_OUNT = "joomOut";
+    public static final String ZOOM_OUT = "joomOut";
 }

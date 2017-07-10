@@ -21,8 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-
-public class JoystickHandlerActivity extends Activity implements JoystickEvents{
+public class JoystickHandlerActivity extends Activity {
 
     // private Window win;
     private LayoutInflater inflater;
@@ -60,14 +59,13 @@ public class JoystickHandlerActivity extends Activity implements JoystickEvents{
         Log.d("FLP","JoystickHandlerActivity videoSrc"+videoSrc);
         Toast.makeText(getApplicationContext(),"JoystickHandlerActivity videoSrc:"+videoSrc,Toast.LENGTH_SHORT).show();
 
-        // 뷰 설정 전에 호출...
+
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        // 메인ContentView 설정
         setContentView(activity_main);
 
-        // Layout 설정
+//      Layout 설정
         inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         mRelativeLayout = (RelativeLayout)inflater.inflate(over, null);
@@ -99,10 +97,7 @@ public class JoystickHandlerActivity extends Activity implements JoystickEvents{
 //      이미지View 설정
         overLay();
     }
-    
-    /**
-     * 조이스틱 이미지 아이콘 레이어...
-     */
+
     public void overLay(){
 
         ImageView iv = (ImageView)findViewById(image_view);
@@ -111,7 +106,7 @@ public class JoystickHandlerActivity extends Activity implements JoystickEvents{
             public boolean onTouch(View v, MotionEvent event) {
                 float x = event.getX();
                 float y = event.getY();
-                Context ct = getApplicationContext();
+
                 int dpx = pxToDp((int)x);
                 int dpy = pxToDp((int)y);
 
@@ -139,51 +134,26 @@ public class JoystickHandlerActivity extends Activity implements JoystickEvents{
             // 네방향
             if(dpy - dpx > 0){              // left, down
                 if(dpy + dpx - ww > 0) {   // down
-                    down();
+                    GigaeyesJoystick.down(getApplicationContext());
                 }else{                      // left
-                    left();
+                    GigaeyesJoystick.left(getApplicationContext());
                 }
             }else{              // right, up
                 if(dpy + dpx - ww > 0) {   // right
-                    right();
+                    GigaeyesJoystick.right(getApplicationContext());
                 }else{                      // up
-                    up();
+                    GigaeyesJoystick.up(getApplicationContext());
                 }
             }
 
         }else if(pl < r3){
             // zoomIn, zoomOut
             if(dpy - hw > 0){
-                zoomOut();
+                GigaeyesJoystick.zoomOut(getApplicationContext());
             }else{
-                zoomIn();
+                GigaeyesJoystick.zoomIn(getApplicationContext());
             }
         }
-    }
-
-    void up(){
-        Toast.makeText(getApplicationContext(), "up button clicked!", Toast.LENGTH_SHORT).show();
-//        webView.sendJavascript("moveUp");
-    }
-
-    void down(){
-        Toast.makeText(getApplicationContext(), "down button clicked!", Toast.LENGTH_SHORT).show();
-    }
-
-    void left(){
-        Toast.makeText(getApplicationContext(), "left button clicked!", Toast.LENGTH_SHORT).show();
-    }
-
-    void right(){
-        Toast.makeText(getApplicationContext(), "right button clicked!", Toast.LENGTH_SHORT).show();
-    }
-
-    void zoomIn(){
-        Toast.makeText(getApplicationContext(), "zoomIn button clicked!", Toast.LENGTH_SHORT).show();
-    }
-
-    void zoomOut(){
-        Toast.makeText(getApplicationContext(), "zoomOut button clicked!", Toast.LENGTH_SHORT).show();
     }
 
     private int pxToDp(int px) {
@@ -192,11 +162,11 @@ public class JoystickHandlerActivity extends Activity implements JoystickEvents{
         return dp;
     }
 
-    private int dpToPx(Context context, int dp) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        return px;
-    }
+    // private int dpToPx(Context context, int dp) {
+    //     DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+    //     int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    //     return px;
+    // }
 
 
     private void finishWithError() {
