@@ -10,17 +10,20 @@ ionic cordova plugin add https://github.com/JAEGYUN/gigaeyesJoystick.git
 add code in build.gradle(Module:android)
 
 ```
-repositories{
-    ...
-    maven {
-        url 'https://maven.google.com'
+buildscript {
+    repositories{
+        ...
+        maven {
+            url 'https://maven.google.com'
+        }
     }
+    ...
 }
-
-dependencies{
+...
+dependencies {
     ...
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-}        
+}     
 ```
 
 ## Using
