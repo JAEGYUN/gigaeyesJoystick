@@ -6,11 +6,13 @@ import android.content.res.Resources;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
 
-import org.apache.cordova.CordovaWebView;
+
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -26,7 +28,7 @@ public class GigaeyesJoystick extends CordovaPlugin {
         Application app = cordova.getActivity().getApplication();
         String package_name = app.getPackageName();
         Resources res = app.getResources();
-        
+
         int activity_main = res.getIdentifier("activity_main", "layout", package_name);
         Log.d("FLP", "activity_main id: " + activity_main);
         int over = res.getIdentifier("over", "layout", package_name);
@@ -38,7 +40,7 @@ public class GigaeyesJoystick extends CordovaPlugin {
             this.coolMethod(args.getString(0), callbackContext);
             return true;
         } else if (action.equals("watch")) {
-            this.callbackContext = callbackContext;
+            GigaeyesJoystick.callbackContext = callbackContext;
             String videoUrl = args.getString(0);
             Context context = cordova.getActivity().getApplicationContext();
             Intent intent = new Intent(context, JoystickHandlerActivity.class);
@@ -48,15 +50,6 @@ public class GigaeyesJoystick extends CordovaPlugin {
             intent.putExtra("image_view", image_view);
             intent.putExtra("video_view", video_view);
             Log.d("FLP", "Adicionaod extra: " + videoUrl);
-            cordova.startActivityForResult(this, intent, 0);
-            return true;
-        } else if (action.equals("move")) {
-            this.callbackContext = callbackContext;
-            String moveType = args.getString(0);
-            Context context = cordova.getActivity().getApplicationContext();
-            Intent intent = new Intent(context, JoystickHandlerActivity.class);
-            intent.putExtra("MOVE_TYPE", moveType);
-            Log.d("FLP", "Adicionaod extra: " + moveType);
             cordova.startActivityForResult(this, intent, 0);
             return true;
         }
@@ -75,40 +68,53 @@ public class GigaeyesJoystick extends CordovaPlugin {
     }
 
     static void up(Context content) {
-
+//        Toast.makeText(content,"JoystickHandlerActivity move: UP",Toast.LENGTH_SHORT).show();
         if(callbackContext != null){
-            callbackContext.success(JoystickEvents.MOVE_UP);
+
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, JoystickEvents.MOVE_UP);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
         }
 
     }
 
     static void down(Context context) {
         if(callbackContext != null){
-            callbackContext.success(JoystickEvents.MOVE_DOWN);
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, JoystickEvents.MOVE_DOWN);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
         }
     }
 
     static void left(Context context) {
         if(callbackContext != null){
-            callbackContext.success(JoystickEvents.MOVE_LEFT);
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, JoystickEvents.MOVE_LEFT);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
         }
     }
 
     static void right(Context context) {
         if(callbackContext != null){
-            callbackContext.success(JoystickEvents.MOVE_RIGHT);
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, JoystickEvents.MOVE_RIGHT);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
         }
     }
 
     static void zoomIn(Context context) {
         if(callbackContext != null){
-            callbackContext.success(JoystickEvents.ZOOM_IN);
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, JoystickEvents.ZOOM_IN);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
         }
     }
 
     static void zoomOut(Context context) {
         if(callbackContext != null){
-            callbackContext.success(JoystickEvents.ZOOM_OUT);
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, JoystickEvents.ZOOM_OUT);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
         }
     }
 
