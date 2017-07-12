@@ -24,18 +24,25 @@ import android.widget.VideoView;
 public class JoystickHandlerActivity extends Activity {
 
     // private Window win;
-    private LayoutInflater inflater;
-    private RelativeLayout mRelativeLayout = null;
-    private VideoView mVideoView;
-    private String videoSrc;
-    private int activity_main;
-    private int over;
-    private int image_view;
-    private int video_view;
+    LayoutInflater inflater;
+
+    private String packageName;
+    private Resources res;
+
+    VideoView mVideoView;
+    RelativeLayout mRelativeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.packageName = getApplication().getPackageName();
+        this.res = getApplication().getResources();
+        int main_layout = res.getIdentifier("gigaeyes_joystick", "layout", this.packageName);
+        int joystick_overlay = res.getIdentifier("joystick_overlay", "layout", this.packageName);
+        int videoView = res.getIdentifier("videoView", "id", this.packageName);
+        
+        String videoSrc ;
 
         if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
             this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
@@ -45,31 +52,22 @@ public class JoystickHandlerActivity extends Activity {
         Bundle extras  = getIntent().getExtras();
         if (extras != null) {
             videoSrc = extras.getString("VIDEO_URL");
-            activity_main = extras.getInt("activity_main");
-            Log.d("FLP","activity_main id: "+activity_main);
-            over = extras.getInt("over");
-            image_view = extras.getInt("image_view");
-            video_view = extras.getInt("video_view");
         } else {
             finishWithError();
         }
-
-
-
+        
         Log.d("FLP","JoystickHandlerActivity videoSrc"+videoSrc);
-        Toast.makeText(getApplicationContext(),"JoystickHandlerActivity videoSrc:"+videoSrc,Toast.LENGTH_SHORT).show();
-
+        // Toast.makeText(getApplicationContext(),"JoystickHandlerActivity videoSrc:"+videoSrc,Toast.LENGTH_SHORT).show();
 
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        setContentView(activity_main);
+        this.setContentView(activity_main);
 
 //      Layout 설정
         inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        mRelativeLayout = (RelativeLayout)inflater.inflate(over, null);
-
+        
+        mRelativeLayout = (RelativeLayout)inflater.inflate(joystick_overlay, null);
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
 
         int width = dm.widthPixels;
@@ -83,16 +81,14 @@ public class JoystickHandlerActivity extends Activity {
 
         getWindow().addContentView(mRelativeLayout, params);
 
-
 //      동영상View 설정
         Uri uri = Uri.parse(videoSrc);
-
-        mVideoView = (VideoView)findViewById(video_view);
+ 
+        mVideoView = (VideoView)findViewById(videoView);
 
         mVideoView.setVideoURI(uri);
         mVideoView.seekTo(0);
         mVideoView.start();
-
 
 //      이미지View 설정
         overLay();
@@ -100,7 +96,9 @@ public class JoystickHandlerActivity extends Activity {
 
     public void overLay(){
 
-        ImageView iv = (ImageView)findViewById(image_view);
+        int img_joystick = res.getIdentifier("img_joystick", "id", this.packageName);
+
+        ImageView iv = (ImageView)findViewById(img_joystick);
         iv.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -118,7 +116,10 @@ public class JoystickHandlerActivity extends Activity {
     }
 
     void decision(int dpx, int dpy){
-        ImageView iv = (ImageView)findViewById(image_view);
+
+        int img_joystick = res.getIdentifier("img_joystick", "id", this.packageName);
+
+        ImageView iv = (ImageView)findViewById(img_joystick);
         int imgW = iv.getWidth();
         int ww = pxToDp(imgW);
 
@@ -134,24 +135,24 @@ public class JoystickHandlerActivity extends Activity {
             // 네방향
             if(dpy - dpx > 0){              // left, down
                 if(dpy + dpx - ww > 0) {   // down
-                    GigaeyesJoystick.down(getApplicationContext());
+                    GigaeyesJoystick.move(JoystickEvents.MOVE_DOWN);
                 }else{                      // left
-                    GigaeyesJoystick.left(getApplicationContext());
+                    GigaeyesJoystick.move(JoystickEvents.MOVE_LEFT;
                 }
             }else{              // right, up
                 if(dpy + dpx - ww > 0) {   // right
-                    GigaeyesJoystick.right(getApplicationContext());
+                    GigaeyesJoystick.move(JoystickEvents.MOVE_RIGHT);
                 }else{                      // up
-                    GigaeyesJoystick.up(getApplicationContext());
+                    GigaeyesJoystick.move(JoystickEvents.MOVE_UP);
                 }
             }
 
         }else if(pl < r3){
             // zoomIn, zoomOut
             if(dpy - hw > 0){
-                GigaeyesJoystick.zoomOut(getApplicationContext());
+                GigaeyesJoystick.move(JoystickEvents.ZOOM_OUT);
             }else{
-                GigaeyesJoystick.zoomIn(getApplicationContext());
+                GigaeyesJoystick.move(JoystickEvents.ZOOM_IN);
             }
         }
     }
@@ -161,12 +162,6 @@ public class JoystickHandlerActivity extends Activity {
         int dp = Math.round(px / scale);
         return dp;
     }
-
-    // private int dpToPx(Context context, int dp) {
-    //     DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-    //     int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-    //     return px;
-    // }
 
 
     private void finishWithError() {
