@@ -38,9 +38,9 @@ public class JoystickHandlerActivity extends Activity {
 
         this.packageName = getApplication().getPackageName();
         this.res = getApplication().getResources();
-        int main_layout = res.getIdentifier("gigaeyes_joystick", "layout", this.packageName);
-        int joystick_overlay = res.getIdentifier("joystick_overlay", "layout", this.packageName);
-        int videoView = res.getIdentifier("videoView", "id", this.packageName);
+        int main_layout = res.getIdentifier(JoystickEvents.MAIN_LAYOUT, "layout", this.packageName);
+        int joystick_overlay = res.getIdentifier(JoystickEvents.JOYSTIC_LAYOUT, "layout", this.packageName);
+        int videoView = res.getIdentifier(JoystickEvents.VIDEO_VIEW, "id", this.packageName);
         
         String videoSrc ;
 
@@ -96,9 +96,9 @@ public class JoystickHandlerActivity extends Activity {
 
     public void overLay(){
 
-        int img_joystick = res.getIdentifier("img_joystick", "id", this.packageName);
+        int image_view = res.getIdentifier(JoystickEvents.IMAGE_VIEW, "id", this.packageName);
 
-        ImageView iv = (ImageView)findViewById(img_joystick);
+        ImageView iv = (ImageView)findViewById(image_view);
         iv.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -117,9 +117,9 @@ public class JoystickHandlerActivity extends Activity {
 
     void decision(int dpx, int dpy){
 
-        int img_joystick = res.getIdentifier("img_joystick", "id", this.packageName);
+        int image_view = res.getIdentifier(JoystickEvents.IMAGE_VIEW, "id", this.packageName);
 
-        ImageView iv = (ImageView)findViewById(img_joystick);
+        ImageView iv = (ImageView)findViewById(image_view);
         int imgW = iv.getWidth();
         int ww = pxToDp(imgW);
 
