@@ -34,10 +34,10 @@ cordova.plugins.gigaeyesjoystick.watch("rtsp://10.0.0.100:554/video", callbackSu
 
 ## return status
 
-* moveUp
-* moveDown
-* moveRight
-* moveLeft
-* zoomIn
-* zoomOut
+* T:U  MOVE_UP
+* T:D  MOVE_DOWN
+* P:L  MOVE_LEFT
+* P:R  MOVE_RIGHT
+* Z:I  ZOOM_IN
+* Z:O  ZOOM_OUT
 
