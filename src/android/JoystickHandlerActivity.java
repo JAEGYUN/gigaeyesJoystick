@@ -42,7 +42,7 @@ public class JoystickHandlerActivity extends Activity {
         int joystick_overlay = res.getIdentifier(JoystickEvents.JOYSTIC_LAYOUT, "layout", this.packageName);
         int videoView = res.getIdentifier(JoystickEvents.VIDEO_VIEW, "id", this.packageName);
         
-        String videoSrc ;
+        String videoSrc ="";
 
         if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
             this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
@@ -62,7 +62,7 @@ public class JoystickHandlerActivity extends Activity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        this.setContentView(activity_main);
+        this.setContentView(main_layout);
 
 //      Layout 설정
         inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
