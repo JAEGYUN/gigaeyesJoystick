@@ -3,7 +3,7 @@ package kr.co.anylogic.joystick;
 
 
 import android.app.Activity;
-
+import android.content.res.Resources;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -137,7 +137,7 @@ public class JoystickHandlerActivity extends Activity {
                 if(dpy + dpx - ww > 0) {   // down
                     GigaeyesJoystick.move(JoystickEvents.MOVE_DOWN);
                 }else{                      // left
-                    GigaeyesJoystick.move(JoystickEvents.MOVE_LEFT;
+                    GigaeyesJoystick.move(JoystickEvents.MOVE_LEFT);
                 }
             }else{              // right, up
                 if(dpy + dpx - ww > 0) {   // right
