@@ -5,6 +5,7 @@
       <clobbers target="cordova.plugins.gigaeyesjoystick" />
    </js-module>
    <platform name="android">
+      <framework src="com.android.support.constraint:constraint-layout:1.0.2" />
       <config-file parent="/*" target="res/xml/config.xml">
          <feature name="GigaeyesJoystick">
             <param name="android-package" value="kr.co.anylogic.joystick.GigaeyesJoystick" />
