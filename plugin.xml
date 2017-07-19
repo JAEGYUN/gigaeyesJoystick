@@ -4,6 +4,27 @@
    <js-module name="GigaeyesJoystick" src="www/gigaeyesjoystick.js">
       <clobbers target="cordova.plugins.gigaeyesjoystick" />
    </js-module>
+   <platform name="ios">
+      <config-file parent="/*" target="config.xml">
+         <feature name="GigaeyesJoystick">
+            <param name="ios-package" value="GigaeyesJoystick" />
+         </feature>
+      </config-file>
+      <header-file src="src/ios/GigaeyesJoystick.h" />
+      <source-file src="src/ios/GigaeyesJoystick.m" />
+      <header-file src="src/ios/JoystickViewController.h" />
+      <source-file src="src/ios/JoystickViewController.m" />
+      <resource-file src="src/ios/JoystickViewController.xib" />
+      <resource-file src="src/ios/res/joystick.png" />
+      <framework src="libiconv.tbd" />
+      <framework src="libz.tbd" />
+      <framework src="libbz2.tbd" />
+      <framework src="CoreMedia.framework" />
+      <framework src="AudioToolBox.framework" />
+      <framework src="VideoToolBox.framework" />
+      <framework src="src/ios/include/SGPlatform.framework" custom="true" />
+      <framework src="src/ios/include/SGPlayer.framework" custom="true" />
+   </platform>
    <platform name="android">
       <framework src="com.android.support.constraint:constraint-layout:1.0.2" />
       <config-file parent="/*" target="res/xml/config.xml">
