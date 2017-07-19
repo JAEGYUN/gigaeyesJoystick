@@ -16,6 +16,7 @@
       <source-file src="src/ios/JoystickViewController.m" />
       <resource-file src="src/ios/JoystickViewController.xib" />
       <resource-file src="src/ios/res/joystick.png" />
+      <resource-file src="src/ios/res/btn_back3.png" />
       <framework src="libiconv.tbd" />
       <framework src="libz.tbd" />
       <framework src="libbz2.tbd" />
