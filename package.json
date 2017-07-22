@@ -5,7 +5,8 @@
   "cordova": {
     "id": "kr.co.anylogic.joystick.GigaeyesJoyStick",
     "platforms": [
-      "android"
+      "android",
+      "ios"
     ]
   },
   "engines": {
