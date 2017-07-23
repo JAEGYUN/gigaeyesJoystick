@@ -2,7 +2,7 @@
 
 @implementation GigaeyesJoystick
 
--(void) watchPanorama:(CDVInvokedUrlCommand*) command{
+-(void) watch:(CDVInvokedUrlCommand*) command{
     NSString * playType = @"joystick";
     
 //확인 예제 코드 : 웹뷰에서 전달한 URL이 전달되었는지를 확인한다.
@@ -27,12 +27,10 @@
     self.overlay.camName = [command argumentAtIndex:1];
     NSLog(@"%@",[command argumentAtIndex:0]);
     
-//  현재 뷰를 자신으로 활성화
+    //  현재 뷰를 자신으로 활성화
     [self.viewController presentViewController:self.overlay animated:YES completion:nil];
 
 }
-
-
 
 -(void) finishOkAndDismiss {
     // 실행종료.
@@ -46,14 +44,12 @@
     self.hasPendingOperation = NO;
 }
 
-
 -(void)pluginInitialize {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onPause) name:UIApplicationDidEnterBackgroundNotification object:nil];
 }
 
 - (void) onPause {
     NSLog(@"pausou..");
-//    [self.overlay buttonDismissPressed:nil];
 }
 
 

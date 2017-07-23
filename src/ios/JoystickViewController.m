@@ -17,6 +17,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *currentTimeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *totalTimeLabel;
 @property (weak, nonatomic) IBOutlet UINavigationItem *navigationBarTitle;
+@property (weak, nonatomic) IBOutlet UIImageView *joystickImageView;
 
 @property (nonatomic, assign) BOOL progressSilderTouching;
 @end
@@ -79,8 +80,13 @@
     
     opQueue = [[NSOperationQueue alloc] init];
     opQueue.maxConcurrentOperationCount = 1; // set to 1 to force everything to run on one thread;
+    self.joystickImageView.userInteractionEnabled = YES;
+//    self.joystickImageView.
 }
 
+-(void) addJoystickImageView{
+    self.joystickImageView.userInteractionEnabled = YES;
+}
 
 - (void)viewDidLayoutSubviews
 {
@@ -113,10 +119,11 @@
     return UIInterfaceOrientationMaskLandscape;
 }
 
+
 -(void) addTapGesture {
-    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageTap)];
+    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapImageView:)];
     
-    UIImageView *get = (UIImageView*)[self.view viewWithTag:100];
+    UIImageView *get = self.joystickImageView; //(UIImageView*)[self.joystickImageView viewWithTag:100];
     
     [get setUserInteractionEnabled:YES];
     [get addGestureRecognizer:singleTap];
@@ -236,6 +243,68 @@
 - (void)dealloc
 {
     [self.player removePlayerNotificationTarget:self];
+}
+
+// Joystick 이벤트 처리
+- (void)tapImageView:(UITapGestureRecognizer *)recognizer
+{
+    CGPoint location = [recognizer locationInView:self.joystickImageView];
+    if ([self.joystickImageView pointInside:location withEvent:nil]) {
+        
+        int imgW = self.joystickImageView.bounds.size.width;
+        
+        int ww = imgW;
+        int hw = ww/2;
+        
+        int pl = (location.x - hw)*(location.x - hw) + (location.y - hw)*(location.y - hw);
+        
+        int r1 = hw * hw;
+        int r2 = (hw*3/4) * (hw*3/4);
+        int r3 = (hw*5/8) * (hw*5/8);
+        
+        NSString* moveType ;
+        
+        
+        
+        if(pl <= r1 && pl > r2){
+            // 네방향
+            if(location.y - location.x > 0){              // left, down
+                if(location.y + location.x - ww > 0) {   // down
+                    NSLog(@" click event Down!!! %f , %f",location.x, location.y);
+                    moveType = @"T:D";
+
+                }else{                      // left
+                    NSLog(@" click event LEFT!!! %f , %f",location.x, location.y);
+                    moveType = @"P:L";
+                }
+            }else{              // right, up
+                if(location.x + location.y - ww > 0) {   // right
+                    NSLog(@" click event RIGHT!!! %f , %f",location.x, location.y);
+                    moveType = @"P:R";
+                }else{                      // up
+                    NSLog(@" click event UP!!! %f , %f",location.x, location.y);
+                    moveType = @"T:U";
+                }
+            }
+            
+        }else if(pl < r3){
+            // zoomIn, zoomOut
+            if(location.y - hw > 0){
+                NSLog(@" click event Zoom Out!!! %f , %f",location.x, location.y);
+                moveType = @"Z:O";
+            }else{
+                NSLog(@" click event Zoom IN!!! %f , %f",location.x, location.y);
+                moveType = @"@Z:I";
+            }
+        }
+        
+        [self.origem.commandDelegate runInBackground:^{
+            //        NSDictionary *jsonInfo =
+            CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: moveType];
+            pluginResult.keepCallback = [NSNumber numberWithBool:YES];
+            [self.origem.commandDelegate sendPluginResult:pluginResult callbackId:self.origem.lastCommand.callbackId];
+        }];
+    }
 }
 
 @end
