@@ -294,7 +294,7 @@
                 moveType = @"Z:O";
             }else{
                 NSLog(@" click event Zoom IN!!! %f , %f",location.x, location.y);
-                moveType = @"@Z:I";
+                moveType = @"Z:I";
             }
         }
         
