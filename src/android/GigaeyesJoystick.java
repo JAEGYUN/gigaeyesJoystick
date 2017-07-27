@@ -1,12 +1,8 @@
 package kr.co.anylogic.joystick;
 
-
-import android.app.Application;
-import android.content.res.Resources;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -23,11 +19,10 @@ public class GigaeyesJoystick extends CordovaPlugin {
 
     private static CallbackContext callbackContext;
 
+    private static String TAG = "GigaeyesJoystick";
+//    private static
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        Application app = cordova.getActivity().getApplication();
-        String package_name = app.getPackageName();
-        Resources res = app.getResources();
 
         if (action.equals("coolMethod")) {
             this.coolMethod(args.getString(0), callbackContext);
@@ -35,10 +30,15 @@ public class GigaeyesJoystick extends CordovaPlugin {
         } else if (action.equals("watch")) {
             GigaeyesJoystick.callbackContext = callbackContext;
             String videoUrl = args.getString(0);
+            String title = "";
+            if(args.length()>1){
+                title = args.getString(1);
+            }
             Context context = cordova.getActivity().getApplicationContext();
             Intent intent = new Intent(context, JoystickHandlerActivity.class);
             intent.putExtra("VIDEO_URL", videoUrl);
-            Log.d("FLP", "Adicionaod extra: " + videoUrl);
+            intent.putExtra("TITLE", title);
+            Log.d(TAG, "Adicionaod extra: " + videoUrl);
             cordova.startActivityForResult(this, intent, 0);
             return true;
         }

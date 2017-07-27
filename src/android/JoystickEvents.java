@@ -8,7 +8,8 @@ public interface JoystickEvents{
     public static final String ZOOM_IN = "Z:I";
     public static final String ZOOM_OUT = "Z:O";
     public static final String MAIN_LAYOUT = "gigaeyes_joystick";
-    public static final String VIDEO_VIEW = "videoView";
+    public static final String MAIN_CONTAINER = "main_container";
+    public static final String TEXTURE_VIEW = "textureView";
     public static final String IMAGE_VIEW = "img_joystick";
     public static final String JOYSTIC_LAYOUT = "joystick_overlay";
 }
