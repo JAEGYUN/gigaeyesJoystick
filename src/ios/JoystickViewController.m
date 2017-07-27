@@ -68,7 +68,9 @@
     // 플레이어 디코더 선택...AVPlayer와 FFmepgDecoder 또는 모두 사용가능하나 FFmpeg을 사용하도록 설정
     // self.player.decoder =  [SGPlayerDecoder decoderByFFmpeg];
     self.player.decoder =  [SGPlayerDecoder decoderByDefault];
-
+    [self.player.decoder setFFmpegCodecContextOptionStringValue :@"tcp" forKey:@"rtsp_transport"];
+    [self.player.decoder setFFmpegCodecContextOptionStringValue :@"prefer_tcp" forKey:@"rtsp_flags"];
+    
    // 하드웨어 가속
     self.player.decoder.hardwareAccelerateEnableForFFmpeg = YES;
     // 자동재생

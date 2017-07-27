@@ -27,14 +27,14 @@
     self.overlay.camName = [command argumentAtIndex:1];
     NSLog(@"%@",[command argumentAtIndex:0]);
     
-    //  현재 뷰를 자신으로 활성화
+//  현재 뷰를 자신으로 활성화
     [self.viewController presentViewController:self.overlay animated:YES completion:nil];
 
 }
 
 -(void) finishOkAndDismiss {
     // 실행종료.
-    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK]
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"ok"]
                                 callbackId:self.lastCommand.callbackId];
     
     // dismiss view from stack
@@ -44,12 +44,14 @@
     self.hasPendingOperation = NO;
 }
 
+
 -(void)pluginInitialize {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onPause) name:UIApplicationDidEnterBackgroundNotification object:nil];
 }
 
 - (void) onPause {
     NSLog(@"pausou..");
+//    [self.overlay buttonDismissPressed:nil];
 }
 
 
