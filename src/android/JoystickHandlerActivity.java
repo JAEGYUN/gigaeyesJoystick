@@ -10,8 +10,8 @@ import android.util.Log;
 import android.graphics.SurfaceTexture;
 import android.util.DisplayMetrics;
 import android.content.Context;
-
-import android.view.Gravity;
+import android.support.v4.view.GestureDetectorCompat;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +28,7 @@ import org.videolan.libvlc.LibVLC;
 
 import java.util.ArrayList;
 
-public class JoystickHandlerActivity extends Activity implements IVLCVout.Callback, TextureView.SurfaceTextureListener  {
+public class JoystickHandlerActivity extends Activity implements IVLCVout.Callback, TextureView.SurfaceTextureListener, GestureDetector.OnGestureListener {
 
     // private Window win;
     LayoutInflater inflater;
@@ -47,11 +47,28 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
 //    RelativeLayout vaLayer;
     RelativeLayout mRelativeLayout;
 
+    private static final int SWIPE_MIN_DISTANCE = 160;
+    private static final int SWIPE_MAX_OFF_PATH = 250;
+    private static final int SWIPE_THRESHOLD_VELOCITY = 100;
+
+    private static final int NONE = 0;
+    private static final int DRAG = 1;
+    private static final int ZOOM = 2;
+    int mode = NONE;
+
+    private GestureDetectorCompat gestureScanner;
+
+    int posX1 = 0, posX2=0, posY1=0, posY2=0;
+
+    float oldDist = 1f;
+    float newDist = 1f;
 
     private static String TAG = "JoystickHandlerActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        gestureScanner = new GestureDetectorCompat(this.getBaseContext(), this);
 
         this.packageName = getApplication().getPackageName();
         this.res = getApplication().getResources();
@@ -186,12 +203,7 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
     private void createPlayer() {
         releasePlayer();
         try {
-//            if (this.videoSrc.length() > 0) {
-//                Toast toast = Toast.makeText(this, this.videoSrc, Toast.LENGTH_LONG);
-//                toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0,
-//                        0);
-//                toast.show();
-//            }
+
 
             // Create LibVLC
             ArrayList<String> options = new ArrayList<String>();
@@ -309,5 +321,140 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
         finish();
     }
 
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+//        try {
+////            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+////                return false;
+//
+//            // right to left swipe
+//            if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+////                Toast.makeText(getApplicationContext(), "Left Swipe", Toast.LENGTH_SHORT).show();
+//                Log.d(TAG, "MOVE LEFT");
+//                GigaeyesJoystick.move(JoystickEvents.MOVE_LEFT);
+//            }
+//            // left to right swipe
+//            else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+////                Toast.makeText(getApplicationContext(), "Right Swipe", Toast.LENGTH_SHORT).show();
+//                Log.d(TAG, "MOVE RIGHT");
+//                GigaeyesJoystick.move(JoystickEvents.MOVE_RIGHT);
+//            }
+//            // down to up swipe
+//            else if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+////                Toast.makeText(getApplicationContext(), "Swipe up", Toast.LENGTH_SHORT).show();
+//                Log.d(TAG, "MOVE UP");
+//                GigaeyesJoystick.move(JoystickEvents.MOVE_UP);
+//            }
+//            // up to down swipe
+//            else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+////                Toast.makeText(getApplicationContext(), "Swipe down", Toast.LENGTH_SHORT).show();
+//                Log.d(TAG, "MOVE DOWN");
+//                GigaeyesJoystick.move(JoystickEvents.MOVE_DOWN);
+//            }
+//        } catch (Exception e) {
+//
+//        }
+        return true;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        int act = event.getAction();
+        String strMsg = "";
+
+        switch(act & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN:
+//                드래그 (첫번째 손가락 터치
+                posX1 = (int) event.getX();
+                posY1 = (int) event.getY();
+                Log.d(TAG, "zoom mode = DRAG");
+                mode = DRAG;
+
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (mode == DRAG){ //DRAG MOVE
+                    posX2 = (int) event.getX();
+                    posY2 = (int) event.getY();
+
+                    if(Math.abs(posX2 -posX1)>SWIPE_MIN_DISTANCE || Math.abs(posY2 - posY1)>SWIPE_MIN_DISTANCE){
+                        if(posX1-posX2>20){
+                            Log.d(TAG, "MOVE LEFT");
+                            GigaeyesJoystick.move(JoystickEvents.MOVE_LEFT);
+                        }else if(posX2-posX1>SWIPE_MIN_DISTANCE){
+                            Log.d(TAG, "MOVE RIGHT");
+                            GigaeyesJoystick.move(JoystickEvents.MOVE_RIGHT);
+                        }else if(posY1-posY2>SWIPE_MIN_DISTANCE){
+                            Log.d(TAG, "MOVE UP");
+                            GigaeyesJoystick.move(JoystickEvents.MOVE_UP);
+                        }else if(posY2-posY1>SWIPE_MIN_DISTANCE){
+                            Log.d(TAG, "MOVE DOWN");
+                            GigaeyesJoystick.move(JoystickEvents.MOVE_DOWN);
+                        }
+
+                        posX1 = posX2;
+                        posY1 = posY2;
+
+                    }
+                }else if(mode == ZOOM){ // Pinch...
+                    newDist = spacing(event);
+                    if(newDist - oldDist > SWIPE_MIN_DISTANCE){
+                        oldDist = newDist;
+                        Log.d(TAG, "ZOOM IN");
+                        GigaeyesJoystick.move(JoystickEvents.ZOOM_IN);
+                    }else if(oldDist - newDist > SWIPE_MIN_DISTANCE){
+                        oldDist = newDist;
+                        Log.d(TAG, "ZOOM OUT");
+                        GigaeyesJoystick.move(JoystickEvents.ZOOM_OUT);
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_UP: // 첫번째 손가락을 떼었을 경우
+            case MotionEvent.ACTION_POINTER_UP: //두번째 손가락을 떼었을 경우
+                mode = NONE;
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN: // 두번째 손가락 터치 (핀치 줌)
+                mode = ZOOM;
+                newDist = spacing(event);
+                oldDist = spacing(event);
+                break;
+            case MotionEvent.ACTION_CANCEL:
+            default:
+                    break;
+        }
+//        return gestureScanner.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    private float spacing(MotionEvent event){
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        return (float)Math.sqrt(x*x+y*y);
+    }
+    @Override
+    public void onLongPress(MotionEvent e) {
+        Toast mToast = Toast.makeText(getApplicationContext(), "Long Press", Toast.LENGTH_SHORT);
+        mToast.show();
+
+    }
+
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        Toast.makeText(getApplicationContext(), "SCROLL", Toast.LENGTH_SHORT);
+        return true;
+    }
+
+    public void onShowPress(MotionEvent e) {
+        Toast.makeText(getApplicationContext(), "SHOW", Toast.LENGTH_SHORT);
+    }
+
+    public boolean onSingleTapUp(MotionEvent e) {
+        Toast.makeText(getApplicationContext(), "SINGLE TAP", Toast.LENGTH_SHORT);
+        return true;
+    }
+
+    public boolean onDown(MotionEvent e) {
+        Toast.makeText(getApplicationContext(), "DOWN", Toast.LENGTH_SHORT);
+        return true;
+    }
 
 }
