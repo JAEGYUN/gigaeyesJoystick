@@ -10,14 +10,25 @@ ionic cordova plugin add https://github.com/JAEGYUN/gigaeyesJoystick.git
 ## Using
 
 ``` javascript
-cordova.plugins.gigaeyesjoystick.watch("rtsp://10.0.0.100:554/video", callbackSucces, callbackError);
+cordova.plugins.gigaeyesjoystick.watch("rtsp://10.0.0.100:554/video","cam명","cam_id","record_status","isFavroites", callbackSucces, callbackError);
 ```
+
 
 ``` javascript
 (only iphone.)
 cordova.plugins.gigaeyesjoystick.watch("rtsp://10.0.0.100:554/video", "title명", callbackSucces, callbackError);
 ```
 
+참조하는 이미지를  gigaeyesPlayer의 것을 재사용하고 있으므로, 먼저 gigaeyesPlayer를 설치할 것.
+moviePath, camName, camId, recordState, isFavorite, success, error
+
+
+## record status
+* Y 정상저장
+* N 장애로 인한 저장실패
+* ? 코드 미정 스케줄에 인한 저장 안함.
+
+## 
 
 ## return status
 

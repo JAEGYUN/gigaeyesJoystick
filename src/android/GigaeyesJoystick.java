@@ -12,6 +12,9 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import kr.co.anylogic.mediaplayer.GigaeyesPlayer;
 
 /**
  * This class echoes a string called from JavaScript.
@@ -19,9 +22,9 @@ import org.json.JSONException;
 public class GigaeyesJoystick extends CordovaPlugin {
 
     private static CallbackContext callbackContext;
-
+    private static String camId;
     private static String TAG = "GigaeyesJoystick";
-//    private static
+    //    private static
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 
@@ -31,14 +34,20 @@ public class GigaeyesJoystick extends CordovaPlugin {
         } else if (action.equals("watch")) {
             GigaeyesJoystick.callbackContext = callbackContext;
             String videoUrl = args.getString(0);
-            String title = "";
-            if(args.length()>1){
-                title = args.getString(1);
-            }
+            String title = args.getString(1);
+            this.camId = args.getString(2);
+            String record_status = args.getString(3);
+            String favorites = args.getString(4);
+
+//            if(args.length()>1){
+//                title = args.getString(1);
+//            }
             Context context = cordova.getActivity().getApplicationContext();
             Intent intent = new Intent(context, JoystickHandlerActivity.class);
-            intent.putExtra("VIDEO_URL", videoUrl);
-            intent.putExtra("TITLE", title);
+            intent.putExtra(JoystickEvents.VIDEO_URL, videoUrl);
+            intent.putExtra(JoystickEvents.VIDEO_TITLE, title);
+            intent.putExtra(JoystickEvents.REC_STATUS, record_status);
+            intent.putExtra(JoystickEvents.FAVORITES, favorites);
             Log.d(TAG, "Adicionaod extra: " + videoUrl);
             cordova.startActivityForResult(this, intent, 0);
             return true;
@@ -79,5 +88,19 @@ public class GigaeyesJoystick extends CordovaPlugin {
             pluginResult.setKeepCallback(true);
             callbackContext.sendPluginResult(pluginResult);
         }
+    }
+
+    /**
+     * 즐겨찾기
+     */
+    static void setFavorites(String favorites) {
+        if(callbackContext != null){
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, favorites);
+            pluginResult.setKeepCallback(true);
+            callbackContext.sendPluginResult(pluginResult);
+
+
+        }
+
     }
 }

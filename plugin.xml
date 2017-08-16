@@ -47,6 +47,7 @@
       </config-file>
       <source-file src="src/android/res/drawable/joystick.png" target-dir="res/drawable" />
       <source-file src="src/android/res/layout/joystick_overlay.xml" target-dir="res/layout" />
+      <source-file src="src/android/res/layout/joystic_play_overlay.xml" target-dir="res/layout" />
       <source-file src="src/android/res/layout/gigaeyes_joystick.xml" target-dir="res/layout" />
       <source-file src="src/android/GigaeyesJoystick.java" target-dir="src/kr/co/anylogic/joystick" />
       <source-file src="src/android/JoystickEvents.java" target-dir="src/kr/co/anylogic/joystick" />

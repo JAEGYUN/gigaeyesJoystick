@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.net.Uri;
 import android.util.Log;
 import android.graphics.SurfaceTexture;
@@ -15,12 +16,17 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+
+import android.view.ViewGroup;
 import android.view.TextureView;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageButton;
+
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.IVLCVout;
@@ -44,8 +50,10 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
     private LibVLC libvlc;
     private MediaPlayer mediaPlayer;
     private TextureView textureView;
-//    RelativeLayout vaLayer;
     RelativeLayout mRelativeLayout;
+    RelativeLayout rlTop;
+
+    boolean clickedFlag = false;
 
     private static final int SWIPE_MIN_DISTANCE = 160;
     private static final int SWIPE_MAX_OFF_PATH = 250;
@@ -62,6 +70,9 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
 
     float oldDist = 1f;
     float newDist = 1f;
+
+    public static boolean favFlag = false;
+    public static boolean onoffFlag = true;
 
     private static String TAG = "JoystickHandlerActivity";
     @Override
@@ -85,13 +96,18 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
         if (extras != null) {
             this.videoSrc = extras.getString("VIDEO_URL");
             this.cctvName = extras.getString("TITLE");
+
+            this.onoffFlag = extras.getString(JoystickEvents.REC_STATUS) != null
+                    && JoystickEvents.STREAM_VALID_STATUS.equals(extras.getString(JoystickEvents.REC_STATUS));
+            this.favFlag = extras.getString(JoystickEvents.FAVORITES) != null
+                    && JoystickEvents.FAVORITES_ON.equals(extras.getString(JoystickEvents.FAVORITES));
+
         } else {
             finishWithError();
         }
         
         Log.d(TAG,"videoSrc : "+this.videoSrc);
-        // Toast.makeText(getApplicationContext(),"JoystickHandlerActivity videoSrc:"+videoSrc,Toast.LENGTH_SHORT).show();
-
+        
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
@@ -165,11 +181,8 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
 
-        int main_container = res.getIdentifier(JoystickEvents.MAIN_CONTAINER, "id", this.packageName);
-        View layoutMainView = (View)this.findViewById(main_container);
-
-        Log.w("Layout Width - ", String.valueOf(layoutMainView.getWidth()));
-        Log.w("Layout Height - ", String.valueOf(layoutMainView.getHeight()));
+        // int main_container = res.getIdentifier(JoystickEvents.MAIN_CONTAINER, "id", this.packageName);
+        // View layoutMainView = this.findViewById(main_container);
 
     }
 
@@ -370,7 +383,7 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
                 posY1 = (int) event.getY();
                 Log.d(TAG, "zoom mode = DRAG");
                 mode = DRAG;
-
+                setOverlay(true);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mode == DRAG){ //DRAG MOVE
@@ -379,17 +392,17 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
 
                     if(Math.abs(posX2 -posX1)>SWIPE_MIN_DISTANCE || Math.abs(posY2 - posY1)>SWIPE_MIN_DISTANCE){
                         if(posX1-posX2>20){
-                            Log.d(TAG, "MOVE LEFT");
-                            GigaeyesJoystick.move(JoystickEvents.MOVE_LEFT);
-                        }else if(posX2-posX1>SWIPE_MIN_DISTANCE){
                             Log.d(TAG, "MOVE RIGHT");
                             GigaeyesJoystick.move(JoystickEvents.MOVE_RIGHT);
+                        }else if(posX2-posX1>SWIPE_MIN_DISTANCE){
+                            Log.d(TAG, "MOVE LEFT");
+                            GigaeyesJoystick.move(JoystickEvents.MOVE_LEFT);
                         }else if(posY1-posY2>SWIPE_MIN_DISTANCE){
-                            Log.d(TAG, "MOVE UP");
-                            GigaeyesJoystick.move(JoystickEvents.MOVE_UP);
-                        }else if(posY2-posY1>SWIPE_MIN_DISTANCE){
                             Log.d(TAG, "MOVE DOWN");
                             GigaeyesJoystick.move(JoystickEvents.MOVE_DOWN);
+                        }else if(posY2-posY1>SWIPE_MIN_DISTANCE){
+                            Log.d(TAG, "MOVE UP");
+                            GigaeyesJoystick.move(JoystickEvents.MOVE_UP);
                         }
 
                         posX1 = posX2;
@@ -410,6 +423,9 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
                 }
                 break;
             case MotionEvent.ACTION_UP: // 첫번째 손가락을 떼었을 경우
+
+
+
             case MotionEvent.ACTION_POINTER_UP: //두번째 손가락을 떼었을 경우
                 mode = NONE;
                 break;
@@ -419,6 +435,7 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
                 oldDist = spacing(event);
                 break;
             case MotionEvent.ACTION_CANCEL:
+
             default:
                     break;
         }
@@ -456,5 +473,210 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
         Toast.makeText(getApplicationContext(), "DOWN", Toast.LENGTH_SHORT);
         return true;
     }
+//
+//    public boolean onTouch(View v, MotionEvent event) {
+//
+//        if(event.getAction() == MotionEvent.ACTION_DOWN){
+//            setOverlay(true);
+//            return true;
+//        }
+//        return false;
+//    }
 
+    Runnable mNavHider = new Runnable() {
+        @Override
+        public void run() {
+            setOverlay(false);
+        }
+    };
+
+    void setOverlay(boolean visible) {
+
+//   버튼 타이틀 바 overlay 설정.
+        if (!visible) {
+            ((ViewGroup) rlTop.getParent()).removeView(rlTop);
+//            ((ViewGroup) backLayout.getParent()).removeView(backLayout);
+            clickedFlag = false;
+        }
+
+        if (visible) {
+            if(clickedFlag)
+                return;
+
+            // addContentView를 호출한다.
+            inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//            int back_layout = res.getIdentifier(GigaeyesConstants.BACK_LAYOUT, GigaeyesConstants.LAYOUT, this.packageName);
+            int control_overlay = res.getIdentifier(JoystickEvents.CONTROL_LAYOUT, JoystickEvents.LAYOUT, this.packageName);
+            int title = res.getIdentifier(JoystickEvents.TITLE, JoystickEvents.ID, this.packageName);
+            int btn_on_off = res.getIdentifier(JoystickEvents.button.ONOFF, JoystickEvents.ID, this.packageName);
+            int btn_star = res.getIdentifier(JoystickEvents.button.STAR, JoystickEvents.ID, this.packageName);
+            int ico_camera_on = res.getIdentifier(JoystickEvents.image.ICO_CAMERA_ON, JoystickEvents.IMAGE, this.packageName);
+            int ico_camera_off = res.getIdentifier(JoystickEvents.image.ICO_CAMERA_OFF, JoystickEvents.IMAGE, this.packageName);
+            int ico_star_on = res.getIdentifier(JoystickEvents.image.ICO_STAR_ON, JoystickEvents.IMAGE, this.packageName);
+            int ico_star_off = res.getIdentifier(JoystickEvents.image.ICO_STAR_OFF, JoystickEvents.IMAGE, this.packageName);
+
+//            backLayout = (RelativeLayout)inflater.inflate(back_layout, null);
+//            getWindow().addContentView(backLayout, new RelativeLayout.LayoutParams(
+//                    ViewGroup.LayoutParams.MATCH_PARENT,
+//                    ViewGroup.LayoutParams.MATCH_PARENT));
+
+            rlTop = (RelativeLayout)inflater.inflate(control_overlay, null);
+            getWindow().addContentView(rlTop, new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
+
+
+            TextView tv = (TextView)findViewById(title);
+            tv.setText(this.cctvName);
+
+            ImageButton btnOnoff = (ImageButton)findViewById(btn_on_off);
+            if(onoffFlag) {
+                btnOnoff.setImageResource(ico_camera_on);
+            }else{
+                btnOnoff.setImageResource(ico_camera_off);
+            }
+//            ImageButton btnStar = (ImageButton)findViewById(btn_star);
+//            if(favFlag) {
+//                btnStar.setImageResource(ico_star_on);
+//            }else{
+//                btnStar.setImageResource(ico_star_off);
+//            }
+
+            // iot_layer, va_layer view를 생성한다.
+
+
+
+            enrollButton();
+
+            Handler h = tv.getHandler();
+            if (h != null) {
+                h.removeCallbacks(mNavHider);
+                h.postDelayed(mNavHider, JoystickEvents.DELAY_TIME);
+            }
+            clickedFlag = true;
+        }
+    }
+
+
+
+    void enrollButton(){
+//        버튼
+        int btn_back = res.getIdentifier(JoystickEvents.button.BACK, JoystickEvents.ID, this.packageName);
+        int btn_on_off = res.getIdentifier(JoystickEvents.button.ONOFF, JoystickEvents.ID, this.packageName);
+        int btn_capture = res.getIdentifier(JoystickEvents.button.CAPTURE, JoystickEvents.ID, this.packageName);
+        int btn_star = res.getIdentifier(JoystickEvents.button.STAR, JoystickEvents.ID, this.packageName);
+
+        ImageButton btn1 = (ImageButton)findViewById(btn_back);
+        btn1.setOnClickListener((new ImageButton.OnClickListener(){
+            public void onClick(View v){
+                clickBtn1();
+            }
+        }));
+
+        ImageButton btn2 = (ImageButton)findViewById(btn_on_off);
+        btn2.setOnClickListener((new ImageButton.OnClickListener(){
+            public void onClick(View v){
+                clickBtn2();
+            }
+        }));
+
+
+//        ImageButton btn5 = (ImageButton)findViewById(btn_capture);
+//        btn5.setOnClickListener((new ImageButton.OnClickListener(){
+//            public void onClick(View v){
+//                clickBtn5();
+//            }
+//        }));
+//
+//        ImageButton btn6 = (ImageButton)findViewById(btn_star);
+//        btn6.setOnClickListener((new ImageButton.OnClickListener(){
+//            public void onClick(View v){
+//                clickBtn6();
+//            }
+//        }));
+    }
+
+
+    void clickBtn1(){
+//      뒤로가기
+        releasePlayer();
+        finish();
+    }
+
+    void clickBtn2(){
+//        Toast.makeText(this, "clickBtn2 Clicked!! 녹화중임을 표시합니다.", Toast.LENGTH_LONG).show();
+    }
+
+
+//    void clickBtn5(){
+//        Log.d(TAG, "스크린샷을 저장합니다" );
+//        getBitmap(textureView);
+//
+//
+//    }
+//    void clickBtn6(){
+//        Log.d(TAG, "즐겨찾기를 설정합니다" );
+//        int btn_star = res.getIdentifier(GigaeyesConstants.button.STAR, GigaeyesConstants.ID, this.packageName);
+//        int ico_star_on = res.getIdentifier(GigaeyesConstants.image.ICO_STAR_ON, GigaeyesConstants.IMAGE, this.packageName);
+//        int ico_star_off = res.getIdentifier(GigaeyesConstants.image.ICO_STAR_OFF, GigaeyesConstants.IMAGE, this.packageName);
+//
+//        ImageButton btnStar = (ImageButton)findViewById(btn_star);
+//        if(favFlag) {
+//            Toast.makeText(this, "즐겨찾기 해제.", Toast.LENGTH_LONG).show();
+//            btnStar.setImageResource(ico_star_off);
+//            GigaeyesPlayer.setFavorites(GigaeyesConstants.FAVORITES_OFF);
+//        }else{
+//            Toast.makeText(this, "즐겨찾기 등록", Toast.LENGTH_LONG).show();
+//            btnStar.setImageResource(ico_star_on);
+//            GigaeyesPlayer.setFavorites(GigaeyesConstants.FAVORITES_ON);
+//        }
+//
+//        favFlag = !favFlag;
+//    }
+
+//    public void getBitmap(TextureView vv) {
+//        Bitmap bm = vv.getBitmap();
+//
+//        Bitmap tarVABM = getVAOverlayBitmap();
+//        Bitmap tarIoTBM = getIoTOverlayBitmap();
+//
+//
+//        //캔버스를 통해 비트맵을 겹치기한다.
+//        Canvas canvas = new Canvas(bm);
+//
+//        if(vaViewFlag) {
+//            canvas.drawBitmap(tarVABM, new Matrix(), null);
+//        }
+//        if(iotViewFlag) {
+//            canvas.drawBitmap(tarIoTBM, new Matrix(), null);
+//        }
+//
+//
+//        long now = System.currentTimeMillis();
+//        Date date = new Date(now);
+//        SimpleDateFormat sdfNow = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.KOREA);
+//        String strNow = sdfNow.format(date);
+//
+//        String mPath = Environment.getExternalStorageDirectory().toString()
+//                + "/Pictures/" + strNow + ".png";
+//
+//        OutputStream fout ;
+//        File imageFile = new File(mPath);
+//
+//        try {
+//            fout = new FileOutputStream(imageFile);
+//            bm.compress(Bitmap.CompressFormat.PNG, 100, fout);
+//            fout.flush();
+//            fout.close();
+//            Toast.makeText(getApplicationContext(), "스크린샷이 저장되었습니다 : " + mPath, Toast.LENGTH_SHORT).show();
+//
+//        } catch (FileNotFoundException e) {
+//            Log.e(TAG, "FileNotFoundException");
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            Log.e(TAG, "IOException");
+//            e.printStackTrace();
+//        }
+//
+//    }
 }
