@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -48,9 +49,16 @@ public class GigaeyesJoystick extends CordovaPlugin {
             intent.putExtra(JoystickEvents.VIDEO_TITLE, title);
             intent.putExtra(JoystickEvents.REC_STATUS, record_status);
             intent.putExtra(JoystickEvents.FAVORITES, favorites);
-            Log.d(TAG, "Adicionaod extra: " + videoUrl);
+            Log.d(TAG, "Adicionaod extra url: " + videoUrl);
+            Log.d(TAG, "Adicionaod extra rec_status: " + record_status);
             cordova.startActivityForResult(this, intent, 0);
             return true;
+        }else if(action.equals("noti")) {
+            String noti = args.getString(0);
+            Context context = cordova.getActivity().getApplicationContext();
+            if(noti != null && noti.length()>0){
+                Toast.makeText(context, noti,2);
+            }
         }
 
         return false;
