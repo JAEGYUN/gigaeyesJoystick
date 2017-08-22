@@ -27,12 +27,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ImageButton;
 
+import com.bumptech.glide.Glide;
+
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.LibVLC;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+
+import kr.co.anylogic.mediaplayer.GigaeyesPlayerActivity;
 
 public class JoystickHandlerActivity extends Activity implements IVLCVout.Callback, TextureView.SurfaceTextureListener, GestureDetector.OnGestureListener {
 
@@ -50,8 +55,10 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
     private LibVLC libvlc;
     private MediaPlayer mediaPlayer;
     private TextureView textureView;
+//    RelativeLayout vaLayer;
     RelativeLayout mRelativeLayout;
     RelativeLayout rlTop;
+    private static ImageView loadingView;
 
     boolean clickedFlag = false;
 
@@ -107,7 +114,8 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
         }
         
         Log.d(TAG,"videoSrc : "+this.videoSrc);
-        
+        // Toast.makeText(getApplicationContext(),"JoystickHandlerActivity videoSrc:"+videoSrc,Toast.LENGTH_SHORT).show();
+
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
@@ -138,6 +146,13 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
 
 //      이미지View 설정
         overLay();
+        int loading_view = res.getIdentifier("iv", JoystickEvents.ID, this.packageName);
+        int loading_gif = res.getIdentifier("loading", "raw", this.packageName);
+        loadingView = (ImageView) findViewById(loading_view);
+//        loadingView.setImageResource(GigaeyesConstants.image);
+
+        Glide.with(this).load(loading_gif).into(loadingView);
+//        textureView.setOnTouchListener(this);
     }
 
     @Override
@@ -181,8 +196,11 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
 
-        // int main_container = res.getIdentifier(JoystickEvents.MAIN_CONTAINER, "id", this.packageName);
-        // View layoutMainView = this.findViewById(main_container);
+        int main_container = res.getIdentifier(JoystickEvents.MAIN_CONTAINER, "id", this.packageName);
+        View layoutMainView = this.findViewById(main_container);
+
+//        Log.w("Layout Width - ", String.valueOf(layoutMainView.getWidth()));
+//        Log.w("Layout Height - ", String.valueOf(layoutMainView.getHeight()));
 
     }
 
@@ -230,7 +248,7 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
 
             // Create media player
             mediaPlayer = new MediaPlayer(libvlc);
-
+            mediaPlayer.setEventListener(mPlayerListener);
             // Set up video output
             final IVLCVout vout = mediaPlayer.getVLCVout();
             vout.setVideoView(textureView);
@@ -679,4 +697,42 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
 //        }
 //
 //    }
+
+    public static void hideLoading(){
+        JoystickHandlerActivity.loadingView.setVisibility(View.INVISIBLE);
+    }
+
+    private MediaPlayer.EventListener mPlayerListener = new MyPlayerListener(this);
+
+    private static class MyPlayerListener implements MediaPlayer.EventListener {
+        private WeakReference<JoystickHandlerActivity> mOwner;
+
+        public MyPlayerListener(JoystickHandlerActivity owner) {
+            mOwner = new WeakReference<JoystickHandlerActivity>(owner);
+        }
+
+        @Override
+        public void onEvent(MediaPlayer.Event event) {
+            JoystickHandlerActivity player = mOwner.get();
+
+            switch(event.type) {
+                case MediaPlayer.Event.EndReached:
+                    Log.d(TAG, "MediaPlayerEndReached");
+                    player.releasePlayer();
+                    break;
+                case MediaPlayer.Event.Opening:
+                    Log.d(TAG,"loading bar open....");
+//                    JoystickHandlerActivity.hideLoading();
+                    break;
+                case MediaPlayer.Event.Playing:
+                    JoystickHandlerActivity.hideLoading();
+                    Log.d(TAG,"loading bar close....");
+                    break;
+                case MediaPlayer.Event.Paused:
+                case MediaPlayer.Event.Stopped:
+                default:
+                    break;
+            }
+        }
+    }
 }
