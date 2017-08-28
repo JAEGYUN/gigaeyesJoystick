@@ -45,6 +45,7 @@ public interface JoystickEvents{
     public static final String MOVE_RIGHT = "P:R";
     public static final String ZOOM_IN = "Z:I";
     public static final String ZOOM_OUT = "Z:O";
+    public static final String STOP = "S";
     public static final String MAIN_LAYOUT = "gigaeyes_joystick";
     public static final String CONTROL_LAYOUT = "joystic_play_overlay";
     public static final String MAIN_CONTAINER = "main_container";

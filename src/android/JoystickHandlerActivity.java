@@ -50,6 +50,7 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
     private String videoSrc = "";
     private String cctvName = "";
 
+    private static String moveStatus = "S";
 //    VideoView mVideoView;
 //  이전버전에서는 videoView를 사용했으나, libvlc를 사용하면서 TextureView로 변경함.
     private LibVLC libvlc;
@@ -292,7 +293,27 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
                 int dpy = pxToDp((int)y);
 
 
-                decision(dpx, dpy);
+                //이벤트 추가
+                int act = event.getAction();
+                String strMsg = "";
+
+                Log.d(TAG,"MOVE>>>>>"+event.getAction());
+                switch(act & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN:
+//                드래그 (첫번째 손가락 터치
+                        Log.d(TAG,"MOVE>>>>>ACTION_TYPE:KEY_DOWN:"+event.getAction());
+                        decision(dpx, dpy);
+                        JoystickHandlerActivity.moveStatus = "M";
+                        break;
+                    case MotionEvent.ACTION_UP: // 첫번째 손가락을 떼었을 경우
+                        Log.d(TAG,"MOVE>>>>>ACTION_TYPE:KEY_UP:"+event.getAction());
+                        GigaeyesJoystick.move(JoystickEvents.STOP);
+                        break;
+                    default:
+                        break;
+                }
+
+
                 return false;
             }
         });
@@ -441,7 +462,12 @@ public class JoystickHandlerActivity extends Activity implements IVLCVout.Callba
                 }
                 break;
             case MotionEvent.ACTION_UP: // 첫번째 손가락을 떼었을 경우
-
+                
+                if("M".equals(JoystickHandlerActivity.moveStatus)){
+                    Log.d(TAG,"MOVE>>>>>ACTION_TYPE:KEY_UP:"+event.getAction());
+                    GigaeyesJoystick.move(JoystickEvents.STOP);
+                    break;
+                }
 
 
             case MotionEvent.ACTION_POINTER_UP: //두번째 손가락을 떼었을 경우
