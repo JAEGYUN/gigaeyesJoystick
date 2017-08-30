@@ -18,6 +18,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *totalTimeLabel;
 @property (weak, nonatomic) IBOutlet UINavigationItem *navigationBarTitle;
 @property (weak, nonatomic) IBOutlet UIImageView *joystickImageView;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
 
 @property (nonatomic, assign) BOOL progressSilderTouching;
 @end
@@ -40,6 +41,7 @@
     // 플레이어 호출 부분
     self.view.backgroundColor = [UIColor blackColor];
     
+    [self.indicator startAnimating];
     // 플레이어 등록
     self.player = [SGPlayer player];
     
@@ -124,11 +126,17 @@
 
 -(void) addTapGesture {
     UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapImageView:)];
+    [singleTap setNumberOfTapsRequired:1];
     
+    UILongPressGestureRecognizer *longTap = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longTapImageView:)];
+    [longTap setNumberOfTapsRequired:0];
+    [longTap setMinimumPressDuration:1.0];
+    [singleTap requireGestureRecognizerToFail:longTap];
     UIImageView *get = self.joystickImageView; //(UIImageView*)[self.joystickImageView viewWithTag:100];
     
     [get setUserInteractionEnabled:YES];
     [get addGestureRecognizer:singleTap];
+    [get addGestureRecognizer:longTap];
 }
 
 -(void) imageTap {
@@ -198,6 +206,7 @@
             break;
         case SGPlayerStatePlaying:
             text = @"Playing";
+            [self.indicator setHidden:YES];
             break;
         case SGPlayerStateSuspend:
             text = @"Suspend";
@@ -250,6 +259,24 @@
 // Joystick 이벤트 처리
 - (void)tapImageView:(UITapGestureRecognizer *)recognizer
 {
+
+    CGPoint location = [recognizer locationInView:self.joystickImageView];
+    if ([self.joystickImageView pointInside:location withEvent:nil]) {
+        
+        
+        NSString* moveType  = @"S";
+        [self.origem.commandDelegate runInBackground:^{
+            //        NSDictionary *jsonInfo =
+            CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: moveType];
+            pluginResult.keepCallback = [NSNumber numberWithBool:YES];
+            [self.origem.commandDelegate sendPluginResult:pluginResult callbackId:self.origem.lastCommand.callbackId];
+        }];
+    }
+}
+
+- (void)longTapImageView:(UILongPressGestureRecognizer *)recognizer
+{
+    
     CGPoint location = [recognizer locationInView:self.joystickImageView];
     if ([self.joystickImageView pointInside:location withEvent:nil]) {
         
@@ -274,7 +301,7 @@
                 if(location.y + location.x - ww > 0) {   // down
                     NSLog(@" click event Down!!! %f , %f",location.x, location.y);
                     moveType = @"T:D";
-
+                    
                 }else{                      // left
                     NSLog(@" click event LEFT!!! %f , %f",location.x, location.y);
                     moveType = @"P:L";
@@ -300,12 +327,14 @@
             }
         }
         
-        [self.origem.commandDelegate runInBackground:^{
-            //        NSDictionary *jsonInfo =
-            CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: moveType];
-            pluginResult.keepCallback = [NSNumber numberWithBool:YES];
-            [self.origem.commandDelegate sendPluginResult:pluginResult callbackId:self.origem.lastCommand.callbackId];
-        }];
+        
+            [self.origem.commandDelegate runInBackground:^{
+                //        NSDictionary *jsonInfo =
+                CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: moveType];
+                pluginResult.keepCallback = [NSNumber numberWithBool:YES];
+                [self.origem.commandDelegate sendPluginResult:pluginResult callbackId:self.origem.lastCommand.callbackId];
+            }];
+        
     }
 }
 
