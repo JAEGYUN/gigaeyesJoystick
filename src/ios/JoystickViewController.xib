@@ -11,7 +11,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="JoystickViewController">
             <connections>
+                <outlet property="indicator" destination="33u-Ai-xm6" id="L9U-EV-ZNT"/>
                 <outlet property="joystickImageView" destination="hsI-6N-lJV" id="40V-YR-84k"/>
+                <outlet property="navigationBar" destination="DFg-XP-5k8" id="ber-2g-xH0"/>
                 <outlet property="navigationBarTitle" destination="mPg-ZI-eVt" id="dG5-rb-OSL"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="ecd-Dv-M0j"/>
             </connections>
@@ -28,7 +30,7 @@
                         <navigationItem id="mPg-ZI-eVt" userLabel="title">
                             <barButtonItem key="leftBarButtonItem" style="plain" id="VtN-Kw-fO3">
                                 <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="1Ni-i3-gt9">
-                                    <rect key="frame" x="20" y="1" width="40" height="42"/>
+                                    <rect key="frame" x="20" y="11" width="16" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration">
                                         <accessibilityTraits key="traits" button="YES" image="YES"/>

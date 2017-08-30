@@ -4,6 +4,9 @@
 
 @interface JoystickViewController (){
     BOOL isHidden;
+    BOOL isMove;
+    BOOL isPinch;
+    CGFloat pinchScale;
     UIActivityIndicatorView *spinner;
     NSOperationQueue *opQueue;
 }
@@ -16,6 +19,7 @@
 @property (weak, nonatomic) IBOutlet UISlider *progressSilder;
 @property (weak, nonatomic) IBOutlet UILabel *currentTimeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *totalTimeLabel;
+@property (weak, nonatomic) IBOutlet UINavigationBar *navigationBar;
 @property (weak, nonatomic) IBOutlet UINavigationItem *navigationBarTitle;
 @property (weak, nonatomic) IBOutlet UIImageView *joystickImageView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
@@ -30,7 +34,8 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     
     isHidden = NO;
-    
+    isMove = NO;
+    isPinch = NO;
     return self;
 }
 
@@ -55,6 +60,20 @@
     // 탭하여 화면 재생
     [self.player setViewTapAction:^(SGPlayer * _Nonnull player, SGPLFView * _Nonnull view) {
         NSLog(@"player display view did click!");
+        
+        if(isMove){
+            NSString* moveType  = @"S";
+            [self.origem.commandDelegate runInBackground:^{
+            //        NSDictionary *jsonInfo =
+                CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: moveType];
+                pluginResult.keepCallback = [NSNumber numberWithBool:YES];
+                [self.origem.commandDelegate sendPluginResult:pluginResult callbackId:self.origem.lastCommand.callbackId];
+            }];
+            isMove = NO;
+        }else{
+            isHidden = !isHidden;
+            [self hiddenBar];
+        }
     }];
     [self.view insertSubview:self.player.view atIndex:0];
 
@@ -86,6 +105,37 @@
     opQueue.maxConcurrentOperationCount = 1; // set to 1 to force everything to run on one thread;
     self.joystickImageView.userInteractionEnabled = YES;
 //    self.joystickImageView.
+//    UISwipeGestureRecognizer * swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+//    swipe.numberOfTouchesRequired = 1;
+//    [swipe setDirection: UISwipeGestureRecognizerDirectionUp|UISwipeGestureRecognizerDirectionDown|UISwipeGestureRecognizerDirectionRight|UISwipeGestureRecognizerDirectionLeft];
+//    [self.view addGestureRecognizer:swipe];
+    [self addGesture];
+}
+
+-(void)addGesture {
+    UISwipeGestureRecognizer *rightSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+    rightSwipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
+    [self.view addGestureRecognizer:rightSwipeGestureRecognizer];
+    
+    UISwipeGestureRecognizer *leftSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+    leftSwipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
+    [self.view addGestureRecognizer:leftSwipeGestureRecognizer];
+    
+    UISwipeGestureRecognizer *upSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+    upSwipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
+    [self.view addGestureRecognizer:upSwipeGestureRecognizer];
+    
+    UISwipeGestureRecognizer *downSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+    downSwipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionDown;
+    [self.view addGestureRecognizer:downSwipeGestureRecognizer];
+    
+    UIPinchGestureRecognizer *zoomInGestureRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
+     [self.view addGestureRecognizer:zoomInGestureRecognizer];
+}
+
+- (void) hiddenBar{
+    [self.navigationBar setHidden:isHidden];
+
 }
 
 -(void) addJoystickImageView{
@@ -259,7 +309,23 @@
 // Joystick 이벤트 처리
 - (void)tapImageView:(UITapGestureRecognizer *)recognizer
 {
-
+// 상단 타이틀 바 show/hidden
+    isHidden = !isHidden;
+    int direction;
+    
+    if(isHidden) {
+        direction = -1;
+    } else {
+        direction = 1;
+    }
+    
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.5f];
+    
+    
+    [UIView commitAnimations];
+    
+// joystic click event
     CGPoint location = [recognizer locationInView:self.joystickImageView];
     if ([self.joystickImageView pointInside:location withEvent:nil]) {
         
@@ -278,8 +344,10 @@
 {
     
     CGPoint location = [recognizer locationInView:self.joystickImageView];
+    
+    if(recognizer.state == UIGestureRecognizerStateBegan){
     if ([self.joystickImageView pointInside:location withEvent:nil]) {
-        
+        NSLog(@"longTouch UIGestureRecognizerStateBegan");
         int imgW = self.joystickImageView.bounds.size.width;
         
         int ww = imgW;
@@ -334,9 +402,79 @@
                 pluginResult.keepCallback = [NSNumber numberWithBool:YES];
                 [self.origem.commandDelegate sendPluginResult:pluginResult callbackId:self.origem.lastCommand.callbackId];
             }];
-        
+    }
+    }else if(recognizer.state == UIGestureRecognizerStateEnded){
+        NSLog(@"longTouch UIGestureRecognizerStateEnded");
+        NSString* moveType  = @"S";
+        [self.origem.commandDelegate runInBackground:^{
+            //        NSDictionary *jsonInfo =
+            CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: moveType];
+            pluginResult.keepCallback = [NSNumber numberWithBool:YES];
+            [self.origem.commandDelegate sendPluginResult:pluginResult callbackId:self.origem.lastCommand.callbackId];
+        }];
+
     }
 }
 
+- (void)handleSwipe:(UISwipeGestureRecognizer*)recognizer {
+    
+    NSString* moveType ;
+    if ( recognizer.direction == UISwipeGestureRecognizerDirectionLeft ){
+        NSLog(@" *** SWIPE LEFT ***");
+        moveType = @"P:L";
+    }
+    if ( recognizer.direction == UISwipeGestureRecognizerDirectionRight ){
+        NSLog(@" *** SWIPE RIGHT ***");
+        moveType = @"P:R";
+    }
+    if ( recognizer.direction== UISwipeGestureRecognizerDirectionUp ){
+        NSLog(@" *** SWIPE UP ***");
+         moveType = @"T:U";
+
+    }
+    if ( recognizer.direction == UISwipeGestureRecognizerDirectionDown ){
+        NSLog(@" *** SWIPE DOWN ***");
+        moveType = @"T:D";
+    }
+    
+    [self.origem.commandDelegate runInBackground:^{
+        //        NSDictionary *jsonInfo =
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: moveType];
+        pluginResult.keepCallback = [NSNumber numberWithBool:YES];
+        [self.origem.commandDelegate sendPluginResult:pluginResult callbackId:self.origem.lastCommand.callbackId];
+    }];
+    
+    isMove = YES;
+}
+
+- (void)handlePinch:(UIPinchGestureRecognizer*)recognizer {
+    
+        if ( recognizer.state == UIGestureRecognizerStateBegan ){
+        NSLog(@" *** Pinch START *** %f",recognizer.scale);
+        pinchScale = recognizer.scale;
+        isPinch = YES;
+    }
+    if ( recognizer.state == UIGestureRecognizerStateEnded ){
+        NSLog(@" *** Pinch End *** %f",recognizer.scale);
+        NSString* moveType ;
+
+        if((pinchScale - recognizer.scale )>0){
+            moveType = @"Z:O";
+        }else {
+            moveType = @"Z:I";
+        }
+        isPinch = NO;
+        [self.origem.commandDelegate runInBackground:^{
+            //        NSDictionary *jsonInfo =
+            CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: moveType];
+            pluginResult.keepCallback = [NSNumber numberWithBool:YES];
+            [self.origem.commandDelegate sendPluginResult:pluginResult callbackId:self.origem.lastCommand.callbackId];
+        }];
+        
+        isMove = YES;
+    }
+    
+  
+}
 @end
 
