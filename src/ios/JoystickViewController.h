@@ -13,4 +13,7 @@
 @property (retain, nonatomic) NSString* videoAddress;
 @property (retain, nonatomic) NSString* playType;
 @property (retain, nonatomic) NSString* camName;
+@property (retain, nonatomic) NSString* camId;
+@property (retain, nonatomic) NSString* recordState;
+@property (retain, nonatomic) NSString* isFavorite;
 @end

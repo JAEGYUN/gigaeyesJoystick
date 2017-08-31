@@ -25,6 +25,10 @@
     self.overlay.videoAddress = [command argumentAtIndex:0];
     self.overlay.playType = playType;
     self.overlay.camName = [command argumentAtIndex:1];
+    self.overlay.camId = [command argumentAtIndex:2];
+    self.overlay.recordState = [command argumentAtIndex:3];
+    self.overlay.isFavorite = [command argumentAtIndex:4];
+
     NSLog(@"%@",[command argumentAtIndex:0]);
     
 //  현재 뷰를 자신으로 활성화

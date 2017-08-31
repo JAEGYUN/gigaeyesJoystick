@@ -6,6 +6,7 @@
     BOOL isHidden;
     BOOL isMove;
     BOOL isPinch;
+    BOOL enableRecord;
     CGFloat pinchScale;
     UIActivityIndicatorView *spinner;
     NSOperationQueue *opQueue;
@@ -22,6 +23,7 @@
 @property (weak, nonatomic) IBOutlet UINavigationBar *navigationBar;
 @property (weak, nonatomic) IBOutlet UINavigationItem *navigationBarTitle;
 @property (weak, nonatomic) IBOutlet UIImageView *joystickImageView;
+@property (weak, nonatomic) IBOutlet UIButton *recordStateButton;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
 
 @property (nonatomic, assign) BOOL progressSilderTouching;
@@ -32,7 +34,7 @@
 // Load with xib :)
 - (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    
+     enableRecord = NO;
     isHidden = NO;
     isMove = NO;
     isPinch = NO;
@@ -110,6 +112,7 @@
 //    [swipe setDirection: UISwipeGestureRecognizerDirectionUp|UISwipeGestureRecognizerDirectionDown|UISwipeGestureRecognizerDirectionRight|UISwipeGestureRecognizerDirectionLeft];
 //    [self.view addGestureRecognizer:swipe];
     [self addGesture];
+    [self drawRecordStatus];
 }
 
 -(void)addGesture {
@@ -476,5 +479,27 @@
     
   
 }
+
+// 저장상태 여부 표시
+- (void)drawRecordStatus{
+    [self.recordStateButton setImage:[UIImage imageNamed:@"ico_cameraoff.png"] forState:UIControlStateNormal];
+    [self.recordStateButton setImage:[UIImage imageNamed:@"ico_cameraon.png"] forState:UIControlStateSelected];
+    [self.recordStateButton setImage:[UIImage imageNamed:@"ico_cameraoff__.png"] forState:UIControlStateDisabled];
+    
+    
+    NSString * diff = @"Y";
+    NSString * err = @"Z";
+    
+    
+    if([diff isEqualToString:self.recordState]){
+        self.recordStateButton.selected = true;
+    }else if([err isEqualToString:self.recordState]){
+        self.recordStateButton.enabled = false;
+    }else{
+        self.recordStateButton.selected = false;
+    }
+    
+}
+
 @end
 
